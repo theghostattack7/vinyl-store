@@ -29,70 +29,89 @@ albumCover.addEventListener("click", () => {
 });
 
 // AUDIO PLAYER //
-
 const buttons = document.querySelectorAll(".play-button");
-
-const tracks = {};
-
-buttons.forEach((button) => {
-  const audioFile = button.dataset.audio;
-
-  const audio = new Audio();
-  audio.preload = "auto";
-  audio.src = audioFile;
-
-  tracks[audioFile] = audio;
-});
+const tracks = new Map();
 
 let currentAudio = null;
 let currentButton = null;
 
 buttons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const audioFile = button.dataset.audio;
-    const audio = tracks[audioFile];
+  const audioFile = button.dataset.audio;
 
-    // Clicking the same button pauses the song
+  if (!audioFile) {
+    console.error("Play button is missing data-audio:", button);
+    return;
+  }
+
+  const audio = new Audio(audioFile);
+  audio.preload = "none";
+
+  tracks.set(button, audio);
+
+  audio.addEventListener("error", () => {
+    console.error("Could not load audio:", audioFile, audio.error);
+  });
+});
+
+function stopCurrentTrack() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+
+  if (currentButton) {
+    currentButton.textContent = "▶";
+  }
+
+  currentAudio = null;
+  currentButton = null;
+}
+
+buttons.forEach((button) => {
+  button.addEventListener("click", async () => {
+    const audio = tracks.get(button);
+
+    if (!audio) return;
+
+    // Pause if the same track is already playing
     if (currentAudio === audio && !audio.paused) {
       audio.pause();
       button.textContent = "▶";
       return;
     }
 
-    // Stop previous song
-    if (currentAudio) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
-    }
+    stopCurrentTrack();
 
-    if (currentButton) {
-      currentButton.textContent = "▶";
-    }
-
-    // Start selected song
     currentAudio = audio;
     currentButton = button;
 
     audio.currentTime = 0;
-    audio.play();
+    button.textContent = "…";
 
-    button.textContent = "■";
-  });
-});
-
-// Stop after 25 seconds
-Object.values(tracks).forEach((audio) => {
-  audio.addEventListener("timeupdate", () => {
-    if (audio.currentTime >= 25) {
-      audio.pause();
-      audio.currentTime = 0;
-
-      if (currentButton) {
-        currentButton.textContent = "▶";
-      }
-
+    try {
+      await audio.play();
+      button.textContent = "■";
+    } catch (error) {
+      console.error("Playback failed:", error);
+      button.textContent = "▶";
       currentAudio = null;
       currentButton = null;
     }
   });
+
+  const audio = tracks.get(button);
+
+  if (audio) {
+    audio.addEventListener("timeupdate", () => {
+      if (audio.currentTime >= 25) {
+        stopCurrentTrack();
+      }
+    });
+
+    audio.addEventListener("ended", () => {
+      if (currentAudio === audio) {
+        stopCurrentTrack();
+      }
+    });
+  }
 });
