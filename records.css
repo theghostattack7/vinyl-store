@@ -1,0 +1,173 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+}
+body {
+  margin: 0;
+  border: 0.2rem solid black;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(0.5rem, 1.2vw, 1rem) clamp(0.7rem, 2vw, 2rem);
+  background-color: #0a0a0a;
+  border: 0.2rem solid black;
+  font-family: "Pixelify Sans", sans-serif;
+  color: #f2f0e8;
+}
+
+.nav-title {
+  margin: 0;
+  font-size: clamp(1rem, 2.5vw, 2rem);
+  letter-spacing: 0.08em;
+}
+.link {
+  color: #f2f0e8;
+  text-decoration: none;
+  font-size: clamp(0.6rem, 1.4vw, 1rem);
+  letter-spacing: 0.08em;
+  padding: 0;
+}
+.container {
+  min-height: 87.5vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+  background-color: #b8b5ad;
+  padding: 1rem;
+}
+
+.record-playing,
+.tracklist,
+.description {
+  border: 0.2rem solid black;
+  border-radius: 12px;
+}
+.record-playing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.record-playing .vinyl,
+.record-playing .album-cover {
+  width: min(60%, 400px);
+  height: auto;
+}
+
+.record-playing .vinyl {
+  cursor: pointer;
+}
+
+.record-playing .album-cover {
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+
+  transition:
+    transform 0.7s ease,
+    opacity 0.7s ease;
+}
+
+.record-playing .album-cover.slide-away {
+  transform: translateX(-300px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tracklist {
+  grid-column: 1;
+  grid-row: 2;
+  background-color: #5c7a45;
+  padding: 1.5rem;
+  font-family: "Pixelify Sans", sans-serif;
+}
+
+.tracklist ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.tracklist li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.tracklist button {
+  background-color: #5c7a45;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tracklist button:hover {
+  background-color: black;
+}
+.description {
+  grid-column: 2;
+  grid-row: 1/3;
+  height: 150vh;
+  max-height: 150vh;
+  background-color: #d8d5ce;
+  padding: 3rem;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  overflow-y: auto;
+}
+
+.description h2 {
+  margin-top: 0;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+
+  letter-spacing: 0.05em;
+}
+
+.description h3 {
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 1rem;
+
+  margin: 0.5rem 0;
+}
+
+.description p {
+  max-width: 700px;
+}
+
+@media (max-width: 700px) {
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .record-playing {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .tracklist {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .description {
+    grid-column: 1;
+    grid-row: auto;
+    max-height: 500pFhx;
+    overflow-y: auto;
+  }
+}
